@@ -8,10 +8,10 @@ Launch flags: `--disable-pinned-memory`, Dynamic VRAM (aimdo) on, `CUDA_VISIBLE_
 
 ## Fresh install
 
-A new ComfyUI checkout at `1a82e6d0` with its own uv venv (no pip) and the models shared through `extra_model_paths.yaml`:
+A new ComfyUI checkout at `1a82e6d0` with its own venv and the models shared through `extra_model_paths.yaml`:
 
 1. `setup.bat COMFY PYTHON --check` → `check_passed` (7 nodes, six models found, h264_nvenc available).
-2. `setup.bat COMFY PYTHON --install-dependencies` → `installed` (nothing missing, package copied to `custom_nodes`).
+2. `setup.bat COMFY PYTHON` → `installed` (package copied to `custom_nodes`).
 3. `workflows/fasth3_omniref_accel.api.json` queued through the API with the development prompt and reference image, seed 771204598.
 4. The GUI workflow was produced by loading the API workflow in this ComfyUI's frontend; converting it back to the API format gave no input or link differences.
 5. `python -m unittest discover -s tests` → 6 tests OK.

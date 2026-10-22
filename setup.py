@@ -7,7 +7,6 @@ import json
 import os
 from pathlib import Path
 import shutil
-import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parent
@@ -55,33 +54,6 @@ def install_package(comfy_root):
     return destination
 
 
-def install_requirements():
-    """Install requirements.txt into this Python only when something is missing (uv venvs have no pip)."""
-    from importlib.metadata import PackageNotFoundError, version
-    missing = []
-    for line in (ROOT / "requirements.txt").read_text(encoding="utf-8").splitlines():
-        requirement = line.split("#")[0].strip()
-        if not requirement:
-            continue
-        name, _, minimum = requirement.partition(">=")
-        try:
-            installed = tuple(int(part) for part in version(name).split(".")[:2])
-            wanted = tuple(int(part) for part in minimum.split(".")[:2]) if minimum else ()
-            if installed < wanted:
-                missing.append(requirement)
-        except PackageNotFoundError:
-            missing.append(requirement)
-    if not missing:
-        return
-    if importlib.util.find_spec("pip") is not None:
-        command = [sys.executable, "-m", "pip", "install", "--no-deps", *missing]
-    elif shutil.which("uv"):
-        command = ["uv", "pip", "install", "--python", sys.executable, "--no-deps", *missing]
-    else:
-        raise RuntimeError("Neither pip nor uv is available for this Python; install manually: " + " ".join(missing))
-    subprocess.run(command, check=True)
-
-
 def import_package(name):
     spec = importlib.util.spec_from_file_location(name, ROOT / "__init__.py", submodule_search_locations=[str(ROOT)])
     module = importlib.util.module_from_spec(spec)
@@ -96,11 +68,8 @@ def main():
     parser.add_argument("python_argument", nargs="?", help="Python selected by setup.bat")
     parser.add_argument("--comfy-root", type=Path)
     parser.add_argument("--check", action="store_true", help="Read-only environment and model check")
-    parser.add_argument("--install-dependencies", action="store_true", help="Install requirements.txt into this ComfyUI's Python")
     parser.add_argument("--extra-model-paths", type=Path, help="Additional native ComfyUI model-path YAML")
     args = parser.parse_args()
-    if args.check and args.install_dependencies:
-        parser.error("--check cannot be combined with installation")
     selected_root = args.comfy_root or args.comfy_argument or os.environ.get("FASTH3_ACCEL_SETUP_ROOT")
     if not selected_root:
         parser.error("Specify the ComfyUI folder")
@@ -110,8 +79,6 @@ def main():
     portable = Path(sys.executable).resolve().parent.name.lower() == "python_embeded"
     if sys.prefix == sys.base_prefix and not portable:
         parser.error("Use the existing ComfyUI venv or portable Python; global/system Python is refused")
-    if args.install_dependencies:
-        install_requirements()
     os.environ["PYTHONIOENCODING"] = "utf-8"
     sys.dont_write_bytecode = True
     sys.path.insert(0, str(comfy_root))

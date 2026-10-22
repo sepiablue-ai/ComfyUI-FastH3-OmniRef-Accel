@@ -71,13 +71,13 @@ ComfyUI を停止してから、このフォルダの `setup.bat` を実行し�
 
 ```bat
 setup.bat "C:\ComfyUI\ComfyUI" "C:\ComfyUI\.venv\Scripts\python.exe" --check
-setup.bat "C:\ComfyUI\ComfyUI" "C:\ComfyUI\.venv\Scripts\python.exe" --install-dependencies
+setup.bat "C:\ComfyUI\ComfyUI" "C:\ComfyUI\.venv\Scripts\python.exe"
 ```
 
 - 第 2 引数は **その ComfyUI の Python** です。portable の `python_embeded`、ComfyUI 内／親フォルダの `.venv`・`venv` を探し、候補が 1 つでなければ指定が必要です。グローバル Python は拒否します。
 - `--check` は読み取りのみです。必要なネイティブノード、h264_nvenc、モデル 6 種の配置を確認します。
-- 引数なしの実行で `ComfyUI/custom_nodes/ComfyUI-FastH3-OmniRef-Accel` にコピーします。既に別内容のフォルダがある場合は上書きせず停止します。
-- `--install-dependencies` は requirements.txt のうち足りないものだけを入れます（pip が無い uv venv では uv を使用）。
+- `--check` なしで実行すると `ComfyUI/custom_nodes/ComfyUI-FastH3-OmniRef-Accel` にコピーします。既に別内容のフォルダがある場合は上書きせず停止します。
+- 追加の Python パッケージはありません（使う PyAV は ComfyUI 本体の依存に含まれています）。
 - 共有のモデルフォルダは ComfyUI 標準の `extra_model_paths.yaml`、setup だけで読む場合は `--extra-model-paths PATH` で指定します。
 - setup 中に `nodes_replacements.py` の IMPORT FAILED 警告が出ますが、サーバーを起動しない確認のためで、生成には影響しません。
 

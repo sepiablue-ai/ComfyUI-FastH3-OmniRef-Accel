@@ -71,13 +71,13 @@ Stop ComfyUI and run `setup.bat` from this folder. Inside `ComfyUI/custom_nodes`
 
 ```bat
 setup.bat "C:\ComfyUI\ComfyUI" "C:\ComfyUI\.venv\Scripts\python.exe" --check
-setup.bat "C:\ComfyUI\ComfyUI" "C:\ComfyUI\.venv\Scripts\python.exe" --install-dependencies
+setup.bat "C:\ComfyUI\ComfyUI" "C:\ComfyUI\.venv\Scripts\python.exe"
 ```
 
 - The second argument is **ComfyUI's own Python**. Portable `python_embeded` and `.venv` / `venv` inside or next to ComfyUI are searched; more than one candidate needs it explicitly. Global Python is refused.
 - `--check` is read-only: native nodes, h264_nvenc and the six models.
 - Without `--check` the package is copied to `ComfyUI/custom_nodes/ComfyUI-FastH3-OmniRef-Accel`; an existing folder with different content is never overwritten.
-- `--install-dependencies` installs only missing requirements (uv is used for uv venvs without pip).
+- No extra Python packages are needed (the PyAV it uses is already a ComfyUI dependency).
 - Shared model folders use ComfyUI's `extra_model_paths.yaml`; `--extra-model-paths PATH` adds one for setup only.
 - An `IMPORT FAILED: nodes_replacements.py` warning during setup comes from loading nodes without a server and does not affect generation.
 
