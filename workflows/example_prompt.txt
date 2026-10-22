@@ -1,0 +1,19 @@
+subject_definitions:
+<Subject 1> is the character in <Picture 1>: describe the hair, outfit and any held items as seen in the reference.
+<Subject 2> is the setting: describe the background.
+
+summary:
+[reference generation] The target video is a 5-second, single-shot anime-style character clip. The character looks at the camera and speaks one short line.
+
+retention_analysis:
+<Subject 1> (appears in [Shot 1]): fully_preserved - face, hairstyle, outfit and items are retained.
+
+detailed_description:
+The target video is a clean, high-detail anime illustration brought to life, with crisp line art and soft lighting.
+[Shot 1] A medium shot (bust-up to knee-up framing works best with this workflow): <Subject 1> stands in front of <Subject 2>. Hair and clothes sway gently. The character smiles at the camera and says in Japanese, "こんにちは。今日もよろしくね。" The camera slowly pushes in.
+
+overall_soundscape:
+Soft ambient room tone and the character's clear young voice.
+
+non_diegetic_music:
+Light, gentle background music.

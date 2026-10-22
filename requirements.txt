@@ -1,0 +1,2 @@
+# Install with the Python belonging to ComfyUI. PyTorch and comfy-kitchen come from ComfyUI.
+av>=17.0.0

@@ -1,0 +1,11 @@
+* text=auto
+*.py text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.txt text eol=lf
+*.bat text eol=crlf
+LICENSE text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf
+# Preserve the pinned LBH source bytes and its recorded SHA-256.
+vendor/lbh_3d.py -text

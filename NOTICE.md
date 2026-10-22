@@ -1,0 +1,12 @@
+# Attribution and model terms
+
+Package code is GPL-3.0; see LICENSE. No model weights, sample images or generated videos are distributed.
+This is an unofficial project, not affiliated with FastVideo, Hao AI Lab, Nuva Lab or MiniMax.
+
+- `vendor/lbh_3d.py` is the unchanged LBH-123-AI Minimax H3 3D latent upscaler implementation. Source: [LBH-123-AI/Comfyui_Minimax_h3_latent_Upscaler](https://github.com/LBH-123-AI/Comfyui_Minimax_h3_latent_Upscaler), `nodes/minimax_h3_latent_upscaler_3d.py`. SHA-256: `9fb4e2ec679f7ba9cc8e10685053d2080ff2891cc0f8913ec9a2660614441879`. Its MIT notice is preserved verbatim in `vendor/LBH_LICENSE.txt`. It is not registered as a node; `lbh.py` calls it.
+- `lbh.py` adapts the handoff (LBH call, CONST re-noise of the video, audio carried over) from sepiablue-ai's [ComfyUI-H3-LBH-X2-Stream](https://github.com/sepiablue-ai/ComfyUI-H3-LBH-X2-Stream) `handoff.py` (GPL-3.0), which in turn was informed by [TripleHeadedMonkey/ComfyUI-MiniMaxH3_LatentUpscaler](https://github.com/TripleHeadedMonkey/ComfyUI-MiniMaxH3_LatentUpscaler). Added: building the LBH network on the meta device for a faster first load.
+- `ffn.py` is sepiablue-ai's [ComfyUI-H3-X2-Stream](https://github.com/sepiablue-ai/ComfyUI-H3-X2-Stream) `ffn.py` (GPL-3.0), which adapts MiniMaxChunkFeedForward from [kijai/ComfyUI-KJNodes](https://github.com/kijai/ComfyUI-KJNodes) `nodes/minimax_nodes.py` (GPL-3.0). Changes: node ID and default chunk count.
+- `stream.py` adapts the asynchronous NVENC writer and the native H3 output-buffer sink from ComfyUI-H3-X2-Stream `streaming.py` (GPL-3.0). Changes: ordinary H3 VAE instead of X2, per-chunk upscale model, resize and center crop.
+- `producer_reuse.py` and `te_dtype.py` wrap [ComfyUI](https://github.com/Comfy-Org/ComfyUI) native code (`comfy_extras/nodes_sparse_attention.py`, the MiniMax H3 text encoder) through model-patcher replacements and object patches; ComfyUI core files are not edited.
+- Real-ESRGAN animevideov3 is loaded through ComfyUI's native upscale model loader; no Real-ESRGAN code is bundled.
+- Model weights keep their own terms: FastH3 OmniRef and the MiniMax H3 VAEs / text encoder (MiniMax-H3 Community License, see [FastVideo/FastH3-Omni-Comfy](https://huggingface.co/FastVideo/FastH3-Omni-Comfy)), LBH weights ([LBH-123-AI/Minimax_h3_latent_Upscaler](https://huggingface.co/LBH-123-AI/Minimax_h3_latent_Upscaler)), Real-ESRGAN ([xinntao/Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN)). This code license does not replace them.

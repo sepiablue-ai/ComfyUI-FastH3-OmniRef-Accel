@@ -1,0 +1,470 @@
+{
+ "1": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "fasth3_omniref_8step_pruned_int8_convrot.safetensors",
+   "weight_dtype": "default"
+  },
+  "_meta": {
+   "title": "Load FastH3 OmniRef"
+  }
+ },
+ "2": {
+  "class_type": "CLIPLoader",
+  "inputs": {
+   "clip_name": "qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors",
+   "type": "minimax",
+   "device": "default"
+  },
+  "_meta": {
+   "title": "Load text encoder (nvfp4)"
+  }
+ },
+ "3": {
+  "class_type": "FastH3AccelPrefetch",
+  "inputs": {
+   "model": [
+    "1",
+    0
+   ],
+   "clip": [
+    "2",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "Prefetch DiT weights"
+  }
+ },
+ "4": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "minimax_h3_video_vae_int8_convrot.safetensors"
+  },
+  "_meta": {
+   "title": "VAELoader"
+  }
+ },
+ "5": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "minimax_h3_audio_vae_fp32.safetensors"
+  },
+  "_meta": {
+   "title": "VAELoader"
+  }
+ },
+ "6": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "reference.png"
+  },
+  "_meta": {
+   "title": "Reference image"
+  }
+ },
+ "7": {
+  "class_type": "FastH3AccelSizes",
+  "inputs": {
+   "output_width": 1024,
+   "output_height": 1792,
+   "min_short_side": 512
+  },
+  "_meta": {
+   "title": "Output size"
+  }
+ },
+ "8": {
+  "class_type": "FastH3AccelTEBF16",
+  "inputs": {
+   "clip": [
+    "3",
+    1
+   ]
+  },
+  "_meta": {
+   "title": "FastH3AccelTEBF16"
+  }
+ },
+ "9": {
+  "class_type": "MiniMaxH3ReferenceToVideo",
+  "inputs": {
+   "clip": [
+    "8",
+    0
+   ],
+   "vae": [
+    "4",
+    0
+   ],
+   "audio_vae": [
+    "5",
+    0
+   ],
+   "prompt": "subject_definitions:\n<Subject 1> is the character in <Picture 1>: describe the hair, outfit and any held items as seen in the reference.\n<Subject 2> is the setting: describe the background.\n\nsummary:\n[reference generation] The target video is a 5-second, single-shot anime-style character clip. The character looks at the camera and speaks one short line.\n\nretention_analysis:\n<Subject 1> (appears in [Shot 1]): fully_preserved - face, hairstyle, outfit and items are retained.\n\ndetailed_description:\nThe target video is a clean, high-detail anime illustration brought to life, with crisp line art and soft lighting.\n[Shot 1] A medium shot (bust-up to knee-up framing works best with this workflow): <Subject 1> stands in front of <Subject 2>. Hair and clothes sway gently. The character smiles at the camera and says in Japanese, \"こんにちは。今日もよろしくね。\" The camera slowly pushes in.\n\noverall_soundscape:\nSoft ambient room tone and the character's clear young voice.\n\nnon_diegetic_music:\nLight, gentle background music.\n",
+   "width": [
+    "7",
+    0
+   ],
+   "height": [
+    "7",
+    1
+   ],
+   "length": 124,
+   "ref_image_size": "match",
+   "ref_images.ref_image_0": [
+    "6",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "Reference to Video (prompt)"
+  }
+ },
+ "10": {
+  "class_type": "FastH3AccelChunkFFN",
+  "inputs": {
+   "model": [
+    "3",
+    0
+   ],
+   "chunks": 8,
+   "seq_threshold": 4096
+  },
+  "_meta": {
+   "title": "FastH3AccelChunkFFN"
+  }
+ },
+ "11": {
+  "class_type": "MiniMaxH3SigmaShift",
+  "inputs": {
+   "model": [
+    "10",
+    0
+   ],
+   "shift_video": 12.0,
+   "shift_audio": 3.0
+  },
+  "_meta": {
+   "title": "MiniMaxH3SigmaShift"
+  }
+ },
+ "12": {
+  "class_type": "ModelAttentionBackend",
+  "inputs": {
+   "model": [
+    "11",
+    0
+   ],
+   "attention": "comfy kitchen attention"
+  },
+  "_meta": {
+   "title": "ModelAttentionBackend"
+  }
+ },
+ "13": {
+  "class_type": "BlockSparseAttention",
+  "inputs": {
+   "model": [
+    "12",
+    0
+   ],
+   "selection": "vsa",
+   "selection.keep_percent": 10.0,
+   "start_percent": 0.0,
+   "end_percent": 1.0,
+   "dense_blocks": "",
+   "min_tokens": 12288,
+   "extra_tokens": 256,
+   "sink_conditioning": "exact_kv_and_rows",
+   "verbose": false
+  },
+  "_meta": {
+   "title": "BlockSparseAttention"
+  }
+ },
+ "14": {
+  "class_type": "FastH3AccelProducerReuse",
+  "inputs": {
+   "model": [
+    "13",
+    0
+   ],
+   "cache_mib": 1280
+  },
+  "_meta": {
+   "title": "FastH3AccelProducerReuse"
+  }
+ },
+ "15": {
+  "class_type": "BasicScheduler",
+  "inputs": {
+   "model": [
+    "14",
+    0
+   ],
+   "scheduler": "simple",
+   "steps": 8,
+   "denoise": 1.0
+  },
+  "_meta": {
+   "title": "BasicScheduler"
+  }
+ },
+ "16": {
+  "class_type": "SplitSigmas",
+  "inputs": {
+   "sigmas": [
+    "15",
+    0
+   ],
+   "step": 5
+  },
+  "_meta": {
+   "title": "SplitSigmas"
+  }
+ },
+ "17": {
+  "class_type": "BasicGuider",
+  "inputs": {
+   "model": [
+    "14",
+    0
+   ],
+   "conditioning": [
+    "9",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "BasicGuider"
+  }
+ },
+ "18": {
+  "class_type": "RandomNoise",
+  "inputs": {
+   "noise_seed": 771204598
+  },
+  "_meta": {
+   "title": "RandomNoise"
+  }
+ },
+ "19": {
+  "class_type": "DisableNoise",
+  "inputs": {},
+  "_meta": {
+   "title": "DisableNoise"
+  }
+ },
+ "20": {
+  "class_type": "KSamplerSelect",
+  "inputs": {
+   "sampler_name": "euler"
+  },
+  "_meta": {
+   "title": "KSamplerSelect"
+  }
+ },
+ "21": {
+  "class_type": "EmptyMiniMaxH3LatentAV",
+  "inputs": {
+   "width": [
+    "7",
+    2
+   ],
+   "height": [
+    "7",
+    3
+   ],
+   "length": 124
+  },
+  "_meta": {
+   "title": "EmptyMiniMaxH3LatentAV"
+  }
+ },
+ "22": {
+  "class_type": "SamplerCustomAdvanced",
+  "inputs": {
+   "noise": [
+    "18",
+    0
+   ],
+   "guider": [
+    "17",
+    0
+   ],
+   "sampler": [
+    "20",
+    0
+   ],
+   "sigmas": [
+    "16",
+    0
+   ],
+   "latent_image": [
+    "21",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "Sampler low-res (5 steps)"
+  }
+ },
+ "23": {
+  "class_type": "LTXVSeparateAVLatent",
+  "inputs": {
+   "av_latent": [
+    "22",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "LTXVSeparateAVLatent"
+  }
+ },
+ "24": {
+  "class_type": "FastH3AccelLBHHandoff",
+  "inputs": {
+   "samples": [
+    "22",
+    1
+   ],
+   "model": [
+    "14",
+    0
+   ],
+   "noise": [
+    "18",
+    0
+   ],
+   "sigmas": [
+    "16",
+    1
+   ],
+   "upscaler_name": "minimax_h3_latent_upscaler_3d_fp16.safetensors",
+   "width": [
+    "7",
+    0
+   ],
+   "height": [
+    "7",
+    1
+   ]
+  },
+  "_meta": {
+   "title": "LBH upscale + continue"
+  }
+ },
+ "25": {
+  "class_type": "LTXVConcatAVLatent",
+  "inputs": {
+   "video_latent": [
+    "24",
+    0
+   ],
+   "audio_latent": [
+    "23",
+    1
+   ]
+  },
+  "_meta": {
+   "title": "LTXVConcatAVLatent"
+  }
+ },
+ "26": {
+  "class_type": "SamplerCustomAdvanced",
+  "inputs": {
+   "noise": [
+    "19",
+    0
+   ],
+   "guider": [
+    "17",
+    0
+   ],
+   "sampler": [
+    "20",
+    0
+   ],
+   "sigmas": [
+    "16",
+    1
+   ],
+   "latent_image": [
+    "25",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "Sampler high-res (3 steps)"
+  }
+ },
+ "27": {
+  "class_type": "VAEDecodeAudio",
+  "inputs": {
+   "samples": [
+    "26",
+    0
+   ],
+   "vae": [
+    "5",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "VAEDecodeAudio"
+  }
+ },
+ "28": {
+  "class_type": "UpscaleModelLoader",
+  "inputs": {
+   "model_name": "realesr-animevideov3.pth"
+  },
+  "_meta": {
+   "title": "UpscaleModelLoader"
+  }
+ },
+ "29": {
+  "class_type": "FastH3AccelStreamSave",
+  "inputs": {
+   "samples": [
+    "26",
+    0
+   ],
+   "vae": [
+    "4",
+    0
+   ],
+   "audio": [
+    "27",
+    0
+   ],
+   "upscale_model": [
+    "28",
+    0
+   ],
+   "scale_by": [
+    "7",
+    4
+   ],
+   "method": "bicubic",
+   "batch_frames": 4,
+   "filename_prefix": "video/FastH3_OmniRef_Accel",
+   "fps": 24.0,
+   "nvenc_gpu": 0,
+   "cq": 18,
+   "tile_overlap": 32,
+   "crop_width": [
+    "7",
+    5
+   ],
+   "crop_height": [
+    "7",
+    6
+   ]
+  },
+  "_meta": {
+   "title": "Decode + ESRGAN + Save"
+  }
+ }
+}
