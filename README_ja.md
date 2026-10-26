@@ -59,10 +59,10 @@ int8（26GB）だと DiT 21GB と合わせて 48GB RAM のキャッシュに収�
 | qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors | models/text_encoders | 同上 |
 | minimax_h3_video_vae_int8_convrot.safetensors | models/vae | 同上 |
 | minimax_h3_audio_vae_fp32.safetensors | models/vae | 同上 |
-| minimax_h3_latent_upscaler_3d_fp16.safetensors | models/latent_upscale_models | [LBH-123-AI/Minimax_h3_latent_Upscaler](https://huggingface.co/LBH-123-AI/Minimax_h3_latent_Upscaler) |
+| minimax_h3_latent_upscaler_3d_conv_v1_fp16.safetensors | models/latent_upscale_models | [LBH-123-AI/Minimax_h3_latent_Upscaler](https://huggingface.co/LBH-123-AI/Minimax_h3_latent_Upscaler/tree/main/minimax_h3_latent_upscaler_3d_conv_v1) |
 | realesr-animevideov3.pth | models/upscale_models | [xinntao/Real-ESRGAN v0.2.5.0](https://github.com/xinntao/Real-ESRGAN/releases/tag/v0.2.5.0) |
 
-LBH の現行配布名 `minimax_h3_latent_upscaler_3d_conv_v1_fp16.safetensors` も setup の確認で受け付けますが、検証に使った重みと同一かは未確認です。
+LBHは配布名を変えずに使用してください。setupと付属ワークフローも `minimax_h3_latent_upscaler_3d_conv_v1_fp16.safetensors` に統一しました。2026-10-26に配布元のLFS SHA-256と検証時の重みが一致することを確認しました：`043e5a48e161610ef6c3ea974645220354d06fa618abca15f76d084812eb55c2`。
 検証に使ったファイルの SHA-256 は [docs/VALIDATION.md](docs/VALIDATION.md) にあります。
 
 ## インストール

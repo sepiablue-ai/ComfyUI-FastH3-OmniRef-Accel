@@ -1583,12 +1583,12 @@
     "Node name for S&R": "FastH3AccelLBHHandoff"
    },
    "widgets_values": [
-    "minimax_h3_latent_upscaler_3d_fp16.safetensors",
+    "minimax_h3_latent_upscaler_3d_conv_v1_fp16.safetensors",
     512,
     896
    ],
    "widgets_values_named": {
-    "upscaler_name": "minimax_h3_latent_upscaler_3d_fp16.safetensors",
+    "upscaler_name": "minimax_h3_latent_upscaler_3d_conv_v1_fp16.safetensors",
     "width": 512,
     "height": 896
    }

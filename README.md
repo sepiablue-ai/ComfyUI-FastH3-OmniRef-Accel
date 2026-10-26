@@ -59,10 +59,10 @@ No weights are bundled or downloaded. Check each source's terms.
 | qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors | models/text_encoders | same |
 | minimax_h3_video_vae_int8_convrot.safetensors | models/vae | same |
 | minimax_h3_audio_vae_fp32.safetensors | models/vae | same |
-| minimax_h3_latent_upscaler_3d_fp16.safetensors | models/latent_upscale_models | [LBH-123-AI/Minimax_h3_latent_Upscaler](https://huggingface.co/LBH-123-AI/Minimax_h3_latent_Upscaler) |
+| minimax_h3_latent_upscaler_3d_conv_v1_fp16.safetensors | models/latent_upscale_models | [LBH-123-AI/Minimax_h3_latent_Upscaler](https://huggingface.co/LBH-123-AI/Minimax_h3_latent_Upscaler/tree/main/minimax_h3_latent_upscaler_3d_conv_v1) |
 | realesr-animevideov3.pth | models/upscale_models | [xinntao/Real-ESRGAN v0.2.5.0](https://github.com/xinntao/Real-ESRGAN/releases/tag/v0.2.5.0) |
 
-The current LBH file name `minimax_h3_latent_upscaler_3d_conv_v1_fp16.safetensors` is also accepted by the setup check; whether it equals the validated weights is unverified.
+Use the published LBH filename unchanged. The setup check and bundled workflows use `minimax_h3_latent_upscaler_3d_conv_v1_fp16.safetensors`. On 2026-10-26 its published LFS SHA-256 was verified against the benchmark weights: `043e5a48e161610ef6c3ea974645220354d06fa618abca15f76d084812eb55c2`.
 SHA-256 of the validated files is in [docs/VALIDATION.md](docs/VALIDATION.md).
 
 ## Install

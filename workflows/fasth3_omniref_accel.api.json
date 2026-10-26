@@ -341,7 +341,7 @@
     "16",
     1
    ],
-   "upscaler_name": "minimax_h3_latent_upscaler_3d_fp16.safetensors",
+   "upscaler_name": "minimax_h3_latent_upscaler_3d_conv_v1_fp16.safetensors",
    "width": [
     "7",
     0

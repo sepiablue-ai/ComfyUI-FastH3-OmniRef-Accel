@@ -15,8 +15,7 @@ MODELS = {
     "text_encoders": ["qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors"],
     "video_vae": ["minimax_h3_video_vae_int8_convrot.safetensors"],
     "audio_vae": ["minimax_h3_audio_vae_fp32.safetensors"],
-    "latent_upscale_models": ["minimax_h3_latent_upscaler_3d_fp16.safetensors",
-                              "minimax_h3_latent_upscaler_3d_conv_v1_fp16.safetensors"],
+    "latent_upscale_models": ["minimax_h3_latent_upscaler_3d_conv_v1_fp16.safetensors"],
     "upscale_models": ["realesr-animevideov3.pth"],
 }
 NATIVE_NODES = ["MiniMaxH3ReferenceToVideo", "MiniMaxH3SigmaShift", "EmptyMiniMaxH3LatentAV", "BlockSparseAttention",
