@@ -67,6 +67,7 @@ def main():
     parser.add_argument("python_argument", nargs="?", help="Python selected by setup.bat")
     parser.add_argument("--comfy-root", type=Path)
     parser.add_argument("--check", action="store_true", help="Read-only environment and model check")
+    parser.add_argument("--sol", action="store_true", help="Also check Sol-H3 INT8 decoder support and weights")
     parser.add_argument("--extra-model-paths", type=Path, help="Additional native ComfyUI model-path YAML")
     args = parser.parse_args()
     selected_root = args.comfy_root or args.comfy_argument or os.environ.get("FASTH3_ACCEL_SETUP_ROOT")
@@ -100,8 +101,14 @@ def main():
     if missing:
         raise RuntimeError("This ComfyUI lacks native nodes " + ", ".join(missing) + "; update ComfyUI")
     package = import_package("fasth3_accel_setup_package")
+    selected_models = dict(MODELS)
+    if args.sol:
+        import comfy.ldm.minimax.vae as minimax_vae
+        if not hasattr(minimax_vae, "NonCausalViT3DDecoder"):
+            raise RuntimeError("The Sol workflow needs ComfyUI with Sol-H3-VAE support (PR #17411); the original workflow is unchanged")
+        selected_models["sol_video_vae"] = ["minimax_h3_sol_vae_int8_convrot.safetensors"]
     found = {}
-    for category, filenames in MODELS.items():
+    for category, filenames in selected_models.items():
         folder = "vae" if category.endswith("vae") else category
         candidates = folder_paths.get_filename_list(folder)
         matches = [name for name in candidates if Path(name).name in filenames]

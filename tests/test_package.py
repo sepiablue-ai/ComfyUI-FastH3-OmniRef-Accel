@@ -29,17 +29,44 @@ class PackageTest(unittest.TestCase):
 
     def test_workflows_use_only_native_and_package_nodes(self):
         known = NATIVE | package_nodes()
-        api = json.loads((ROOT / "workflows/fasth3_omniref_accel.api.json").read_text(encoding="utf-8"))
-        self.assertEqual({n["class_type"] for n in api.values()} - known, set())
-        gui = json.loads((ROOT / "workflows/fasth3_omniref_accel.json").read_text(encoding="utf-8"))
-        self.assertEqual({n["type"] for n in gui["nodes"]} - known, set())
+        for stem in ("fasth3_omniref_accel", "fasth3_omniref_accel_sol"):
+            with self.subTest(workflow=stem):
+                api = json.loads((ROOT / "workflows" / (stem + ".api.json")).read_text(encoding="utf-8"))
+                self.assertEqual({n["class_type"] for n in api.values()} - known, set())
+                gui = json.loads((ROOT / "workflows" / (stem + ".json")).read_text(encoding="utf-8"))
+                self.assertEqual({n["type"] for n in gui["nodes"]} - known, set())
 
     def test_api_links_resolve(self):
-        api = json.loads((ROOT / "workflows/fasth3_omniref_accel.api.json").read_text(encoding="utf-8"))
-        for node in api.values():
-            for value in node["inputs"].values():
-                if isinstance(value, list) and len(value) == 2 and isinstance(value[0], str):
-                    self.assertIn(value[0], api)
+        for path in (ROOT / "workflows").glob("*.api.json"):
+            api = json.loads(path.read_text(encoding="utf-8"))
+            for node in api.values():
+                for value in node["inputs"].values():
+                    if isinstance(value, list) and len(value) == 2 and isinstance(value[0], str):
+                        self.assertIn(value[0], api)
+
+    def test_sol_only_changes_final_video_decode(self):
+        base = json.loads((ROOT / "workflows/fasth3_omniref_accel.api.json").read_text(encoding="utf-8"))
+        sol = json.loads((ROOT / "workflows/fasth3_omniref_accel_sol.api.json").read_text(encoding="utf-8"))
+        self.assertEqual(set(sol) - set(base), {"30"})
+        self.assertEqual(sol["30"]["inputs"]["vae_name"], "minimax_h3_sol_vae_int8_convrot.safetensors")
+        self.assertEqual(sol["9"]["inputs"]["vae"], ["4", 0])
+        self.assertEqual(sol["29"]["inputs"]["vae"], ["30", 0])
+        for key, node in base.items():
+            expected = dict(node["inputs"])
+            if key == "29":
+                expected["vae"] = ["30", 0]
+                expected["filename_prefix"] = "video/FastH3_OmniRef_Accel_Sol"
+            self.assertEqual(sol[key]["inputs"], expected)
+
+    def test_sol_gui_vae_links_match_api(self):
+        gui = json.loads((ROOT / "workflows/fasth3_omniref_accel_sol.json").read_text(encoding="utf-8"))
+        nodes = {n["id"]: n for n in gui["nodes"]}
+        self.assertEqual(nodes[30]["widgets_values"], ["minimax_h3_sol_vae_int8_convrot.safetensors"])
+        self.assertTrue(any(l[1] == 4 and l[3] == 9 and l[5] == "VAE" for l in gui["links"]))
+        self.assertTrue(any(l[1] == 30 and l[3] == 29 and l[5] == "VAE" for l in gui["links"]))
+        for lid, src, slot, dst, index, kind in gui["links"]:
+            self.assertEqual(nodes[dst]["inputs"][index]["link"], lid)
+            self.assertIn(lid, nodes[src]["outputs"][slot]["links"])
 
 
 if __name__ == "__main__":

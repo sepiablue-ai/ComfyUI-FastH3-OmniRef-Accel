@@ -95,6 +95,23 @@ setup.bat "C:\ComfyUI\ComfyUI" "C:\ComfyUI\.venv\Scripts\python.exe"
 
 出力は ComfyUI の `output/video/FastH3_OmniRef_Accel_*.mp4`（H.264 NVENC CQ18、AAC）です。
 
+## Sol VAE INT8版の使い方
+
+Sol版は8 stepの生成、参照画像の条件付け用の通常H3 VAE、Real-ESRGAN animevideov3を維持し、最後の映像デコードだけをSol VAE INT8へ変更します。AnimeSRは不要です。
+
+1. [Sol-H3-VAE対応（PR #17411）](https://github.com/Comfy-Org/ComfyUI/pull/17411)を含むComfyUIを使用します。検証環境はComfyUI 0.43.0、コミット `0df1646a9cd71d4c990a87014fb37797a2956ead` です。古いComfyUIでは従来版ワークフローを利用できます。
+2. [Comfy-Org/MiniMax-H3](https://huggingface.co/Comfy-Org/MiniMax-H3/tree/main/vae)の `minimax_h3_sol_vae_int8_convrot.safetensors` を `models/vae` に追加します。通常の映像VAEも必要です。
+3. ComfyUIを停止して、このカスタムノードのチェックアウトで `git pull` し、再起動します。別フォルダからsetupで導入した場合は、導入済みフォルダを退避して新版を配置してください。setupは内容の異なる既存環境を上書きしません。
+4. `setup.bat "C:\ComfyUI\ComfyUI" "C:\ComfyUI\.venv\Scripts\python.exe" --check --sol` で、Solを含むモデル7種と対応環境を確認します。
+5. [fasth3_omniref_accel_sol.json](workflows/fasth3_omniref_accel_sol.json)（[API用](workflows/fasth3_omniref_accel_sol.api.json)）を読み込み、参照画像とプロンプトを設定して実行します。保存先は `output/video/FastH3_OmniRef_Accel_Sol_*.mp4` です。
+
+| RTX 3060 12GB・124フレーム・24fps・1024x1792 | 通常VAE | Sol VAE INT8 |
+|---|---:|---:|
+| モデル読込からMP4保存までの全生成工程 | 126.444秒 | **113.441秒** |
+| 同じ実行中のデコード・拡大・NVENC保存ノード | 22.001秒 | **10.946秒** |
+
+今回の比較では全工程が **13.003秒（約10.3％）短縮**しました。各条件1回、ComfyUIを新規起動し、保存済み潜在の再利用やノード出力キャッシュなしで実行した結果です。複数回の平均ではありません。今回のSol動画は作者が画質を確認して採用し、デコード音声も一致しました。すべての入力で同等画質を保証するものではなく、上記の小さな顔の制約も残ります。Sol版のRTX 4070実測は未実施で、冒頭の4070の数値は通常VAE版です。[条件と検証内容](docs/SOL_VALIDATION.md)、[計測値JSON](docs/sol_benchmark.json)も参照してください。
+
 ## 注意
 
 - 前半の低解像度 step 数は SplitSigmas の `step`（既定 5）。縦長のアップ構図では 6 でも問題ありませんでしたが（約 5 秒速い）、横長では音声劣化判定で NG が出たため既定は 5 です。

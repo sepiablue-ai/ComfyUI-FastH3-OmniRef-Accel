@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-29",
+  "hardware": "NVIDIA GeForce RTX 3060 12GB, physical GPU 1",
+  "comfyui": "0.43.0, 0df1646a9cd71d4c990a87014fb37797a2956ead",
+  "protocol": "One independent complete reference-image-to-MP4 run per case, fresh ComfyUI process each time; no saved latent reuse; no node cache hits; server startup and validation excluded. OS cache was not cleared; another GPU workload continued.",
+  "frames": 124,
+  "fps": 24,
+  "output_size": [
+    1024,
+    1792
+  ],
+  "low_size": [
+    256,
+    448
+  ],
+  "high_size": [
+    512,
+    896
+  ],
+  "low_steps": 5,
+  "high_steps": 3,
+  "model": "fasth3_omniref_8step_pruned_int8_convrot.safetensors",
+  "upscaler": "realesr-animevideov3.pth, FP16 channels_last, batch4, x4 then bicubic 0.5",
+  "encoder": "H.264 NVENC p4/hq CQ18, AAC 32kHz",
+  "cases": [
+    {
+      "name": "baseline_full",
+      "total_seconds": 126.444,
+      "decode_upscale_nvenc_seconds": 22.000615600001765
+    },
+    {
+      "name": "sol_full",
+      "total_seconds": 113.441,
+      "decode_upscale_nvenc_seconds": 10.945810100005474
+    }
+  ],
+  "full_saved_seconds": 13.003,
+  "full_reduction_percent": 10.283603808800734,
+  "validation": {
+    "full_video_audio_decode": true,
+    "audio_pcm_identical": true,
+    "audio_pcm_sha256": "483b378f86702093d3c1c9d468a5dcfd7c07ba7ae06926537f21a20f97c7af24",
+    "human_review": "Author accepted the Sol output image quality for this case on 2026-10-29; this does not establish equivalence for all inputs."
+  },
+  "sol_weights_sha256": "a742069ba173bc3aba64cf8d8289d073e0818f2753f2fc2768f0342645089682",
+  "models_bundled": false,
+  "note": "Published examples use reference.png as a user-selected placeholder. Only the filename/output prefix differs from the executed graphs. This is not a 4070 measurement."
+}

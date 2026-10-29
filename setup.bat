@@ -16,7 +16,7 @@ call :candidate "%COMFY_ROOT%\..\.venv\Scripts\python.exe"
 call :candidate "%COMFY_ROOT%\venv\Scripts\python.exe"
 if not "%PYTHON_COUNT%"=="1" (
   echo ERROR: Specify the ComfyUI Python explicitly as the second argument.
-  echo Usage: setup.bat "COMFY_ROOT" "COMFY_PYTHON" [--check]
+  echo Usage: setup.bat "COMFY_ROOT" "COMFY_PYTHON" [--check] [--sol]
   exit /b 1
 )
 :run

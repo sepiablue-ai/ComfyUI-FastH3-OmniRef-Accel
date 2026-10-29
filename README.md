@@ -95,6 +95,23 @@ setup.bat "C:\ComfyUI\ComfyUI" "C:\ComfyUI\.venv\Scripts\python.exe"
 
 Videos are saved as `output/video/FastH3_OmniRef_Accel_*.mp4` (H.264 NVENC CQ18, AAC).
 
+## Optional Sol VAE INT8 workflow
+
+The Sol variant keeps all 8 FastH3 sampling steps, the normal H3 VAE for reference conditioning, and Real-ESRGAN animevideov3. Only the final video decoder changes to Sol VAE INT8. AnimeSR is not required.
+
+1. Use ComfyUI with [Sol-H3-VAE support (PR #17411)](https://github.com/Comfy-Org/ComfyUI/pull/17411). Tested: ComfyUI 0.43.0, commit `0df1646a9cd71d4c990a87014fb37797a2956ead`. Older ComfyUI can keep using the original workflow.
+2. Add `minimax_h3_sol_vae_int8_convrot.safetensors` from [Comfy-Org/MiniMax-H3](https://huggingface.co/Comfy-Org/MiniMax-H3/tree/main/vae) to `models/vae`. Keep the normal video VAE too.
+3. Update this custom-node checkout with `git pull` while ComfyUI is stopped, then restart. For a separate checkout installed through setup, preserve the old installed folder and copy this version in its place; setup does not overwrite a differing installation.
+4. Check the environment with `setup.bat "C:\ComfyUI\ComfyUI" "C:\ComfyUI\.venv\Scripts\python.exe" --check --sol` (seven model files, including Sol).
+5. Load [fasth3_omniref_accel_sol.json](workflows/fasth3_omniref_accel_sol.json) ([API](workflows/fasth3_omniref_accel_sol.api.json)), choose your reference image and prompt, and queue. Output: `output/video/FastH3_OmniRef_Accel_Sol_*.mp4`.
+
+| RTX 3060 12 GB, 124 frames at 24 fps, 1024x1792 | Original VAE | Sol VAE INT8 |
+|---|---:|---:|
+| Complete generation, model loading through MP4 save | 126.444 s | **113.441 s** |
+| Decode + upscale + NVENC save node, within that run | 22.001 s | **10.946 s** |
+
+The complete workflow saved **13.003 s (10.3%)** in this comparison. Each case ran once in a fresh ComfyUI process, with no saved latent reuse or node output cache hits. These are not repeated-run averages. The author accepted the tested Sol video's image quality; decoded audio was identical. This does not establish image-quality equivalence for all inputs or remove the small-face limitation above. Sol has not been timed on the RTX 4070 here; the earlier 4070 results use the original VAE. See [conditions and validation](docs/SOL_VALIDATION.md) and [machine-readable results](docs/sol_benchmark.json).
+
 ## Notes
 
 - Low-resolution steps are SplitSigmas `step` (default 5). 6 was fine for portrait close-ups (about 5 s faster), but gave an audio NG in a landscape test, so the default stays 5.

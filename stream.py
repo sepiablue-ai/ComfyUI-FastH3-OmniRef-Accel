@@ -39,7 +39,10 @@ class UpscaleSink:
         self.worker = ThreadPoolExecutor(max_workers=1, thread_name_prefix="fasth3-accel-nvenc")
 
     def __getitem__(self, key):
-        if len(key) != 5 or any(key[i] != slice(None) for i in (0, 1, 3, 4)):
+        if len(key) == 3:
+            key = key + (slice(None), slice(None))
+        if (len(key) != 5 or key[0] not in (slice(None), slice(0, 1))
+                or any(key[i] != slice(None) for i in (1, 3, 4))):
             raise ValueError("ComfyUI's native H3 output-buffer contract changed.")
         if key[2].step is not None or key[2].start != self.written:
             raise ValueError("H3 chunks must be written sequentially.")
